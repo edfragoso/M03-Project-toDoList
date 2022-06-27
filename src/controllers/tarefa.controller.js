@@ -1,41 +1,64 @@
 const tarefasService = require('../services/tarefa.service');
 
-
 const findAllTarefasController = (req, res) => {
-    const tarefas = tarefasService.findAllTarefaService();
-    res.send(tarefas);
+  const tarefas = tarefasService.findAllTarefaService();
+  res.send(tarefas);
 };
 
 const findByIdTarefaController = (req, res) => {
-    const parametroId = Number(req.params.id);
+  const parametroId = req.params.id;
     const escolhaTarefa = tarefasService.findByIdTarefaService(parametroId);
-    res.send(escolhaTarefa);
+    if (escolhaTarefa !== undefined) {
+        res.send(escolhaTarefa);
+  } else {
+        res.send({ message: 'Tarefa não encontrada' });
+  }
 };
 
 const createTarefaController = (req, res) => {
     const tarefa = req.body;
-    const novaTarefa = tarefasService.createTarefaService(tarefa);
-    res.send(novaTarefa);
+    if (tarefa.tarefa === undefined || tarefa.descricao === undefined || tarefa.situacao === undefined) {
+    res.status(400).send({ message: 'Dados incompletos, por favor preencha todos os campos' });
+    }
+    if (typeof (tarefa.situacao) !== "boolean") {
+        res.status(400).send({ message: 'Campo situação dever ser do tipo boolean' });
+    } else {
+        const novaTarefa = tarefasService.createTarefaService(tarefa);
+        res.status(201).send({ message: 'Tarefa criada com sucesso', data: novaTarefa });
+    }
 };
 
 const updateTarefaController = (req, res) => {
-    const idParam = Number(req.params.id);
-    const tarefaEditada = req.body;
-    const updateTarefa = tarefasService.updateTarefaService(idParam, tarefaEditada);
-    res.send(updateTarefa);
+  const idParam = req.params.id;
+  const tarefaEditada = req.body;
+  const updateTarefa = tarefasService.updateTarefaService(idParam, tarefaEditada);
+     if (updateTarefa.tarefa === undefined || updateTarefa.descricao === undefined || updateTarefa.situacao === undefined) {
+    res.status(400).send({ message: 'Dados incompletos, por favor preencha todos os campos' });
+    }
+   if (typeof(updateTarefa.situacao) !== "boolean") {
+    res.status(400).send({ message: 'Campo situação dever ser do tipo boolean' });
+   }
+   if (updateTarefa.id !== undefined) {
+    res.send({ message: 'Tarefa Atualizada com sucesso!', data: updateTarefa });
+  } else {
+    res.send({ message: 'Tarefa não encontrada' });
+  }
 };
 
 const deleteTarefaController = (req, res) => {
     const idParam = req.params.id;
-    tarefasService.deleteTarefaService(idParam);
-    res.send({messagem: 'Tarefa excluida com sucesso!'})
-}
-
+    const deleteTarefas = tarefasService.deleteTarefaService(idParam);
+    if (deleteTarefas) {
+        res.send({ message: "Tarefa excluida com sucesso!" });
+    } else {
+        res.send({ message: 'Tarefa não encontrada' });
+    }
+};
 
 module.exports = {
-    findAllTarefasController,
-    findByIdTarefaController,
-    createTarefaController,
-    updateTarefaController,
-    deleteTarefaController,
+  findAllTarefasController,
+  findByIdTarefaController,
+  createTarefaController,
+  updateTarefaController,
+  deleteTarefaController,
 };

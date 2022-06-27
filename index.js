@@ -10,8 +10,6 @@ app.use(cors());
 app.use('/tarefas', routes);
 
 
-
-
 app.listen(port, () => {
   console.log(`Servidor rodando em http://localhost:${port}`);
 });
